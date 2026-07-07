@@ -9,8 +9,8 @@ Built for **WordCamp Philippines 2026**.
 ## Features
 
 ### Dashboard
-
 <img width="1911" height="917" alt="image" src="https://github.com/user-attachments/assets/f178dab1-82cc-434e-9ed2-07105297cd3e" />
+
 - Live stats: total attendees, checked-in count, not-yet-arrived, QR emails sent, Contributor Day registrations
 - Check-in progress bar with percentage
 - Ticket type breakdown with proportional bars
