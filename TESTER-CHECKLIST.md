@@ -42,10 +42,6 @@ Takes about 15–20 minutes. No technical knowledge needed — just click throug
 - [ ] Click **Print Badge**
 - [ ] Confirm the print preview shows ONLY the badge — no website menus, no browser clutter
 
-## 7. Clean Up
-- [ ] Go back to Attendees, find "Test Person", click **🗑 Del**, confirm the delete
-- [ ] Confirm "Test Person" is gone from the list
-
 ---
 
 ## ✅ / ❌ Quick Summary
@@ -61,7 +57,6 @@ Takes about 15–20 minutes. No technical knowledge needed — just click throug
 | Camera scanner opens (back camera) | ☐ Yes ☐ No |
 | Scanning a QR checks someone in | ☐ Yes ☐ No |
 | Re-scanning shows "already checked in" | ☐ Yes ☐ No |
-| Delete an attendee | ☐ Yes ☐ No |
 
 **Device(s) you tested on:** ___________________________
 
