@@ -20,7 +20,7 @@ Takes about 15–20 minutes. No technical knowledge needed — just click throug
 
 ## 3. Add a Test Attendee
 - [ ] Click **+ Add Attendee**
-- [ ] Fill in a fake name and email (e.g. "Test Person" / test@example.com)
+- [ ] Fill in a fake name and email (e.g. "Test Person" / test@example.com). You can use tool like https://temp-mail.org/en/
 - [ ] Save it — you should be taken to their profile page
 - [ ] Go back to Attendees list and confirm "Test Person" shows up
 
