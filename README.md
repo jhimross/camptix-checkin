@@ -9,8 +9,6 @@ Built for **WordCamp Philippines 2026**.
 ## Features
 
 ### Dashboard
-<img width="1911" height="917" alt="image" src="https://github.com/user-attachments/assets/f178dab1-82cc-434e-9ed2-07105297cd3e" />
-
 - Live stats: total attendees, checked-in count, not-yet-arrived, QR emails sent, Contributor Day registrations
 - Check-in progress bar with percentage
 - Ticket type breakdown with proportional bars
@@ -19,9 +17,6 @@ Built for **WordCamp Philippines 2026**.
 - Quick-action buttons to scanner, add attendee, send QR codes, and sync
 
 ### Attendee Management
-
-<img width="1906" height="910" alt="image" src="https://github.com/user-attachments/assets/bb5e838d-e913-46a6-8317-922f98cdc91b" />
-
 - Local `ctci_attendee` custom post type mirrors all WordCamp attendee data
 - Full attendee table with search, filter by ticket type and check-in status
 - **Add attendee** manually via form
@@ -30,8 +25,6 @@ Built for **WordCamp Philippines 2026**.
 - Columns: Name on Badge, Full Name, Email, Ticket Type, Company, WP Username, Twitter/X, Contributor Day, Check-In Status, Actions
 
 ### QR Codes
-<img width="410" height="466" alt="image" src="https://github.com/user-attachments/assets/095824d7-6623-4527-b3a1-487e3139b524" />
-
 - HMAC-SHA256 signed payload per attendee — tamper-proof
 - QR image fetched server-side from `api.qrserver.com` and cached as raw PNG bytes (24 h transient)
 - Sent to attendees as a **CID inline attachment** (renders in Gmail, Outlook, Apple Mail — `data:` URIs are blocked by email clients and are not used)
@@ -40,8 +33,6 @@ Built for **WordCamp Philippines 2026**.
 - Send QR page shows: Name on Badge, Full Name, Email, Ticket Type, QR sent date, Resend button
 
 ### QR Scanner
-<img width="1916" height="912" alt="image" src="https://github.com/user-attachments/assets/313d1632-7914-4b06-b2a0-7aa8686b83ae" />
-
 - Camera-based scanner using the bundled [jsQR](https://github.com/cozmo/jsQR) library (no external CDN)
 - Verifies HMAC signature before accepting a scan
 - Marks attendee as checked in via REST API, stores timestamp
@@ -50,18 +41,12 @@ Built for **WordCamp Philippines 2026**.
 - Recent scans log on screen
 
 ### Name Badges
-<img width="423" height="336" alt="image" src="https://github.com/user-attachments/assets/e999949f-1618-484f-b6cc-23b4fc2de636" />
-
 - Standalone HTML page — **no WordPress admin chrome** — safe to print directly
 - Shows: Name on Badge (large), Company, WordPress.org username, Twitter/X handle, Website URL
 - Ticket type shown only for non-Regular tickets (Regular is the default and omitted)
 - Print button triggers browser print dialog; no QR code on the badge (QR is for check-in only)
 
 ### Data Sync
-<img width="1904" height="913" alt="image" src="https://github.com/user-attachments/assets/1730182e-04d2-4da6-85c4-59f81d61301d" />
-<img width="1917" height="914" alt="image" src="https://github.com/user-attachments/assets/2fadaf8b-0a7a-43c1-91bb-7f4f95c40e7c" />
-
-
 - **REST API pull** from any WordCamp site (requires Application Password)
 - **CSV import** — compatible with the real CampTix export from WordCamp.org
   - Handles all standard CampTix column headers including long Contributor Day question text
@@ -69,8 +54,6 @@ Built for **WordCamp Philippines 2026**.
 - Configurable auto-sync schedule
 
 ### Settings & Reset
-<img width="1900" height="913" alt="image" src="https://github.com/user-attachments/assets/ea5c6721-1c15-4e66-8b49-774ac70848fb" />
-
 - Configurable check-in meta key, email subject, badge field visibility
 - **Danger Zone** — Reset All button permanently deletes all attendee data, check-in records, QR cache, and sent-email flags
 

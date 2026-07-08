@@ -108,7 +108,7 @@ foreach ( $checked_in_ids as $pid ) {
 </div>
 
 <!-- ── Two-col row: ticket breakdown + recent check-ins ─────────────────── -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+<div class="ctci-two-col" style="margin-top:20px;">
 
 	<!-- Ticket breakdown -->
 	<div class="ctci-card">

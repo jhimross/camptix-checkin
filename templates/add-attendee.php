@@ -18,7 +18,7 @@
 		<?php wp_nonce_field( 'ctci_add_attendee' ); ?>
 		<input type="hidden" name="action" value="ctci_add_attendee" />
 
-		<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+		<div class="ctci-two-col">
 
 			<div class="ctci-card">
 				<h2><?php esc_html_e( 'Identity', 'camptix-checkin' ); ?></h2>

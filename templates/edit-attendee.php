@@ -40,7 +40,7 @@ $saved    = isset( $_GET['saved'] );
 		<input type="hidden" name="action"            value="ctci_save_attendee" />
 		<input type="hidden" name="ctci_attendee_id"  value="<?php echo esc_attr( $attendee_id ); ?>" />
 
-		<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+		<div class="ctci-two-col">
 
 			<!-- ── Left column: identity ───────────────────── -->
 			<div>
