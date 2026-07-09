@@ -9,7 +9,8 @@ Built for **WordCamp Philippines 2026**.
 ## Features
 
 ### Dashboard
-<img width="1911" height="917" alt="image" src="https://github.com/user-attachments/assets/f178dab1-82cc-434e-9ed2-07105297cd3e" />
+<img width="1904" height="912" alt="image" src="https://github.com/user-attachments/assets/493b66e1-cae3-490c-bddb-6ba46872dcd1" />
+
 
 - Live stats: total attendees, checked-in count, not-yet-arrived, QR emails sent, Contributor Day registrations
 - Check-in progress bar with percentage
@@ -50,7 +51,7 @@ Built for **WordCamp Philippines 2026**.
 - Recent scans log on screen
 
 ### Name Badges
-<img width="423" height="336" alt="image" src="https://github.com/user-attachments/assets/e999949f-1618-484f-b6cc-23b4fc2de636" />
+<img width="440" height="366" alt="Screenshot 2026-07-09 at 4 14 03 PM" src="https://github.com/user-attachments/assets/dbda4f76-17de-4acd-8f1c-dbdb89427bf4" />
 
 - Standalone HTML page — **no WordPress admin chrome** — safe to print directly
 - Shows: Name on Badge (large), Company, WordPress.org username, Twitter/X handle, Website URL
