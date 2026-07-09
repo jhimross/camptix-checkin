@@ -240,6 +240,7 @@ class CTCI_Admin_UI {
 			'ctci_social'             => sanitize_text_field( $_POST['ctci_social']             ?? '' ),
 			'ctci_website'            => esc_url_raw( $_POST['ctci_website']                    ?? '' ),
 			'ctci_contributor_day'    => sanitize_text_field( $_POST['ctci_contributor_day']    ?? 'No' ),
+			'ctci_meal_preference'    => sanitize_text_field( $_POST['ctci_meal_preference']    ?? '' ),
 			'ctci_order_status'       => 'publish',
 		];
 		foreach ( $meta as $k => $v ) update_post_meta( $post_id, $k, $v );
@@ -306,6 +307,7 @@ class CTCI_Admin_UI {
 			'ctci_social'             => 'sanitize_text_field',
 			'ctci_website'            => 'esc_url_raw',
 			'ctci_contributor_day'    => 'sanitize_text_field',
+			'ctci_meal_preference'    => 'sanitize_text_field',
 		];
 
 		foreach ( $fields as $key => $sanitizer ) {

@@ -106,15 +106,11 @@
 		setStatus( '⏳ Verifying…', 'scanning' );
 		showResult( 'loading', '⏳', '<p>Verifying QR code…</p>' );
 
-		let body;
-		// Support plain attendee IDs (manual entry) as well as full payloads.
-		if ( /^\d+$/.test( payload.trim() ) ) {
-			const id   = parseInt( payload.trim(), 10 );
-			const hash = await hmacSha256( String( id ), '' ); // will fail server-side — server re-validates
-			body = { payload: payload.trim() + '|' + hash };
-		} else {
-			body = { payload };
-		}
+		// Manual entry accepts a plain attendee ID (e.g. "267"); the server
+		// trusts it directly since the caller is already authenticated.
+		// A scanned QR payload ("<id>|<hmac>") is passed through as-is and
+		// verified server-side against the signing secret.
+		const body = { payload: payload.trim() };
 
 		try {
 			const res  = await fetch( apiBase + '/scan', {
@@ -271,17 +267,6 @@
 			osc.start();
 			osc.stop( ctx.currentTime + 0.18 );
 		} catch ( e ) { /* audio not available */ }
-	}
-
-	// HMAC-SHA256 via Web Crypto (for manual ID entry fallback — server still validates)
-	async function hmacSha256( message, secret ) {
-		const enc = new TextEncoder();
-		const key = await crypto.subtle.importKey(
-			'raw', enc.encode( secret || 'x' ),
-			{ name: 'HMAC', hash: 'SHA-256' }, false, [ 'sign' ]
-		);
-		const sig = await crypto.subtle.sign( 'HMAC', key, enc.encode( message ) );
-		return Array.from( new Uint8Array( sig ) ).map( b => b.toString( 16 ).padStart( 2, '0' ) ).join( '' );
 	}
 
 } )();

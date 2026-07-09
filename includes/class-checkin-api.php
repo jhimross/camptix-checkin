@@ -64,10 +64,19 @@ class CTCI_Checkin_API {
 		return current_user_can( 'edit_posts' );
 	}
 
-	/** Handle a QR scan. */
+	/** Handle a QR scan (or manual attendee-ID entry). */
 	public function handle_scan( WP_REST_Request $request ): WP_REST_Response {
-		$payload     = $request->get_param( 'payload' );
-		$attendee_id = CTCI_QR_Generator::verify_payload( $payload );
+		$payload = trim( (string) $request->get_param( 'payload' ) );
+
+		// Manual entry: a bare attendee ID (no "|hash" suffix). The caller is
+		// already authenticated with edit_posts capability via wp-admin, so we
+		// trust a direct ID lookup here instead of requiring the HMAC signature
+		// (which only the server can compute — the browser never has the secret).
+		if ( ctype_digit( $payload ) ) {
+			$attendee_id = absint( $payload );
+		} else {
+			$attendee_id = CTCI_QR_Generator::verify_payload( $payload );
+		}
 
 		if ( ! $attendee_id ) {
 			return new WP_REST_Response( [ 'error' => __( 'Invalid or tampered QR code.', 'camptix-checkin' ) ], 400 );
@@ -177,6 +186,7 @@ class CTCI_Checkin_API {
 				'social'               => $d['social'],
 				'website'              => $d['website'],
 				'contributor_day'      => $d['contributor_day'],
+				'meal_preference'      => $d['meal_preference'],
 				'checked_in'           => $d['checked_in'],
 				'checked_in_at'        => $d['checked_in_at'],
 				'qr_url'               => $d['qr_url'],
@@ -209,6 +219,7 @@ class CTCI_Checkin_API {
 			'website'       => $questions[ $q_web ] ?? ( $meta[ $q_web ][0] ?? '' ),
 			'social'        => $questions[ $q_key ] ?? ( $meta[ $q_key ][0] ?? '' ),
 			'company'       => $questions[ $q_co  ] ?? ( $meta[ $q_co  ][0] ?? '' ),
+			'meal_preference' => $questions['meal_preference'] ?? ( $meta['ctci_meal_preference'][0] ?? '' ),
 			'checked_in'    => ! empty( $meta[ $meta_key ][0] ),
 			'checked_in_at' => $meta[ $meta_key ][0] ?? null,
 			'qr_url'        => CTCI_QR_Generator::get_qr_url( $attendee_id, 250 ),

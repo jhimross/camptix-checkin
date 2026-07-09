@@ -252,7 +252,7 @@
 	border-radius: 4px;
 }
 .ctci-attendee-table {
-	min-width: 980px; /* total of all column widths below */
+	min-width: 1080px; /* total of all column widths below */
 	border: none !important;
 }
 .ctci-attendee-table .col-id       { width: 56px;  min-width: 56px; }
@@ -263,6 +263,7 @@
 .ctci-attendee-table .col-company  { width: 110px; min-width: 90px; }
 .ctci-attendee-table .col-wp       { width: 100px; min-width: 90px; }
 .ctci-attendee-table .col-social   { width: 90px;  min-width: 80px; }
+.ctci-attendee-table .col-meal     { width: 100px; min-width: 90px; }
 .ctci-attendee-table .col-cd       { width: 56px;  min-width: 56px; }
 .ctci-attendee-table .col-status   { width: 88px;  min-width: 80px; }
 .ctci-attendee-table .col-actions  { width: 162px; min-width: 162px; }
@@ -416,6 +417,13 @@
 }
 
 /* ── Dashboard ────────────────────────────────────────────────── */
+.ctci-dash-filter {
+	margin-bottom: 16px;
+	padding: 14px 16px;
+}
+.ctci-dash-filter select {
+	min-height: 32px;
+}
 .ctci-dash-stats {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -633,6 +641,11 @@
 		font-size: 12px;
 		min-height: 32px;
 	}
+
+	/* Dashboard date filter: stack full-width on narrow screens */
+	.ctci-dash-filter form { flex-direction: column; align-items: stretch !important; }
+	.ctci-dash-filter select,
+	.ctci-dash-filter .button { width: 100%; }
 
 	/* Dashboard stat cards: 2-per-row instead of squeezing 5 in */
 	.ctci-dash-stats { grid-template-columns: repeat(2, 1fr); }

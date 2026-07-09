@@ -72,13 +72,14 @@
 				<th class="col-company"><?php esc_html_e( 'Company', 'camptix-checkin' ); ?></th>
 				<th class="col-wp"><?php esc_html_e( 'WP Username', 'camptix-checkin' ); ?></th>
 				<th class="col-social"><?php esc_html_e( 'Twitter/X', 'camptix-checkin' ); ?></th>
+				<th class="col-meal"><?php esc_html_e( 'Meal Pref', 'camptix-checkin' ); ?></th>
 				<th class="col-cd"><?php esc_html_e( 'Contrib Day', 'camptix-checkin' ); ?></th>
 				<th class="col-status"><?php esc_html_e( 'Check-in', 'camptix-checkin' ); ?></th>
 				<th class="col-actions"><?php esc_html_e( 'Actions', 'camptix-checkin' ); ?></th>
 			</tr>
 		</thead>
 		<tbody id="ctci-attendees-body">
-			<tr><td colspan="11"><?php esc_html_e( 'Loading attendees…', 'camptix-checkin' ); ?></td></tr>
+			<tr><td colspan="12"><?php esc_html_e( 'Loading attendees…', 'camptix-checkin' ); ?></td></tr>
 		</tbody>
 	</table>
 	</div><!-- /.ctci-attendee-table-wrap -->
@@ -95,13 +96,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	async function loadAttendees() {
 		const tbody = document.getElementById('ctci-attendees-body');
-		tbody.innerHTML = '<tr><td colspan="11">Loading…</td></tr>';
+		tbody.innerHTML = '<tr><td colspan="12">Loading…</td></tr>';
 		try {
 			const res    = await fetch(apiBase + '/attendees', { headers: { 'X-WP-Nonce': nonce } });
 			allAttendees = await res.json();
 			renderTable(allAttendees);
 		} catch (e) {
-			tbody.innerHTML = '<tr><td colspan="11">Failed to load attendees.</td></tr>';
+			tbody.innerHTML = '<tr><td colspan="12">Failed to load attendees.</td></tr>';
 		}
 	}
 
@@ -114,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		summary.textContent = total + ' attendees — ' + checked + ' checked in (' + pct + '%)';
 
 		if (!rows.length) {
-			tbody.innerHTML = '<tr><td colspan="11">No attendees found.</td></tr>';
+			tbody.innerHTML = '<tr><td colspan="12">No attendees found.</td></tr>';
 			return;
 		}
 
@@ -142,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				<td class="col-company">${escHtml(a.company)}</td>
 				<td class="col-wp">${a.wordpress_username ? '<a href="https://profiles.wordpress.org/' + escHtml(a.wordpress_username) + '/" target="_blank">@' + escHtml(a.wordpress_username) + '</a>' : ''}</td>
 				<td class="col-social">${a.social ? '<span class="ctci-social">@' + escHtml(a.social) + '</span>' : ''}</td>
+				<td class="col-meal">${a.meal_preference ? escHtml(a.meal_preference) : '<span style="color:#bbb;">—</span>'}</td>
 				<td class="col-cd" style="text-align:center;">${a.contributor_day === 'Yes' ? '✅' : ''}</td>
 				<td class="col-status">${a.checked_in
 					? '<span class="ctci-badge ctci-badge-in">&#10003; Checked In</span><br><small>' + escHtml(a.checked_in_at || '') + '</small>'

@@ -98,6 +98,14 @@ $saved    = isset( $_GET['saved'] );
 								</select>
 							</td>
 						</tr>
+						<tr>
+							<th><label for="ctci_meal_preference"><?php esc_html_e( 'Meal Preference', 'camptix-checkin' ); ?></label></th>
+							<td>
+								<input id="ctci_meal_preference" name="ctci_meal_preference" type="text" class="regular-text"
+									value="<?php echo esc_attr( $d['meal_preference'] ); ?>"
+									placeholder="e.g. Vegetarian, Halal, No Pork" />
+							</td>
+						</tr>
 					</table>
 				</div>
 

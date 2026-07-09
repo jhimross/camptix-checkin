@@ -16,6 +16,7 @@
  *   ctci_social             – Twitter/X handle
  *   ctci_website            – Website URL
  *   ctci_contributor_day    – Will join Contributor Day? (Yes/No)
+ *   ctci_meal_preference    – Meal Preference (e.g. Vegetarian, Halal, No Pork, etc.)
  *   ctci_qr_sent            – datetime QR email was sent
  *   camptix_checkin_time    – datetime attendee was checked in
  */
@@ -113,6 +114,7 @@ class CTCI_Attendee_CPT {
 			'ctci_social'             => sanitize_text_field( $data['social']             ?? '' ),
 			'ctci_website'            => esc_url_raw( $data['website'] ?? '' ),
 			'ctci_contributor_day'    => sanitize_text_field( $data['contributor_day']    ?? '' ),
+			'ctci_meal_preference'    => sanitize_text_field( $data['meal_preference']    ?? '' ),
 		];
 
 		foreach ( $meta_map as $key => $value ) {
@@ -159,6 +161,7 @@ class CTCI_Attendee_CPT {
 			'social'               => $social,
 			'website'              => $meta['ctci_website'][0]            ?? '',
 			'contributor_day'      => $meta['ctci_contributor_day'][0]    ?? '',
+			'meal_preference'      => $meta['ctci_meal_preference'][0]    ?? '',
 			'checked_in'           => ! empty( $meta[ $meta_key ][0] ),
 			'checked_in_at'        => $meta[ $meta_key ][0]              ?? null,
 			'qr_sent'              => $meta['ctci_qr_sent'][0]           ?? null,

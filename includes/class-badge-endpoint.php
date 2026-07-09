@@ -85,7 +85,13 @@ class CTCI_Badge_Endpoint {
 		$badge_name  = trim( $data['badge_name'] ?: $data['name'] );
 		$company     = trim( $data['company'] ?? '' );
 		$ticket_type = trim( $data['ticket']  ?? '' );
+		$meal_pref   = trim( $data['meal_preference'] ?? '' );
 		$blog_name   = get_bloginfo( 'name' );
+
+		// "Regular" ticket displays as the generic "Attendee" label on the badge.
+		$ticket_label = ( $ticket_type && strtolower( $ticket_type ) === 'regular' )
+			? __( 'Attendee', 'camptix-checkin' )
+			: $ticket_type;
 
 		// Collect all available social/web fields.
 		$wp_username = trim( $data['wordpress_username'] ?? '' );

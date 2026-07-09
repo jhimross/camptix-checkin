@@ -31,6 +31,7 @@ class CTCI_WordCamp_Sync {
 	const OPT_Q_COMPANY = 'ctci_q_company';
 	const OPT_Q_SOCIAL  = 'ctci_q_social';
 	const OPT_Q_WEBSITE = 'ctci_q_website';
+	const OPT_Q_MEAL    = 'ctci_q_meal';
 
 	public function __construct() {
 		add_action( self::CRON_HOOK, [ $this, 'run_sync' ] );
@@ -145,6 +146,7 @@ class CTCI_WordCamp_Sync {
 		$q_company = get_option( self::OPT_Q_COMPANY, 'company' );
 		$q_social  = get_option( self::OPT_Q_SOCIAL,  'social'  );
 		$q_website = get_option( self::OPT_Q_WEBSITE, 'website' );
+		$q_meal    = get_option( self::OPT_Q_MEAL,    'meal'    );
 
 		// Resolve the ticket post ID if available.
 		$ticket_id   = $meta['tix_ticket_id'][0]   ?? ( $meta['tix_ticket_id']   ?? '' );
@@ -161,6 +163,7 @@ class CTCI_WordCamp_Sync {
 			'company'      => $questions[ $q_company ] ?? ( $meta[ $q_company ][0] ?? ( $meta[ $q_company ] ?? '' ) ),
 			'social'       => $questions[ $q_social  ] ?? ( $meta[ $q_social  ][0] ?? ( $meta[ $q_social  ] ?? '' ) ),
 			'website'      => $questions[ $q_website ] ?? ( $meta[ $q_website ][0] ?? ( $meta[ $q_website ] ?? '' ) ),
+			'meal_preference' => $questions[ $q_meal ] ?? ( $meta[ $q_meal ][0] ?? ( $meta[ $q_meal ] ?? '' ) ),
 		];
 	}
 
@@ -242,6 +245,15 @@ class CTCI_WordCamp_Sync {
 				'will you also join contributor day? contributor day is free for ticket holders, but separate registration is required. slots are limited to the first 300 registered participants only.' => 'contributor_day',
 				'will you also join contributor day?' => 'contributor_day',
 				'contributor day'             => 'contributor_day',
+				'meal preferences'            => 'meal_preference',
+				'meal preference'             => 'meal_preference',
+				'meal'                        => 'meal_preference',
+				'dietary preference'          => 'meal_preference',
+				'dietary preferences'         => 'meal_preference',
+				'dietary restriction'         => 'meal_preference',
+				'dietary restrictions'        => 'meal_preference',
+				'food preference'             => 'meal_preference',
+				'food preferences'            => 'meal_preference',
 			];
 
 			foreach ( $aliases as $alias => $canonical ) {

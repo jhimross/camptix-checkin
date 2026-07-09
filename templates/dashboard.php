@@ -14,6 +14,31 @@ $checked_in  = count( $checked_in_ids );
 $not_checked = $total - $checked_in;
 $pct         = $total > 0 ? round( ( $checked_in / $total ) * 100 ) : 0;
 
+// Date filter ("report per day"): build a map of attendee => check-in
+// timestamp, derive the distinct days that actually have activity, and
+// resolve the currently selected day from the query string.
+$checkin_times = [];
+foreach ( $checked_in_ids as $pid ) {
+	$t = get_post_meta( $pid, $meta_key, true );
+	if ( $t ) {
+		$checkin_times[ $pid ] = $t;
+	}
+}
+$available_days = array_unique( array_map( fn( $t ) => substr( $t, 0, 10 ), $checkin_times ) );
+sort( $available_days );
+
+$requested_day = isset( $_GET['ctci_date'] ) ? sanitize_text_field( wp_unslash( $_GET['ctci_date'] ) ) : 'all';
+$selected_day  = ( $requested_day !== 'all' && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $requested_day ) )
+	? $requested_day
+	: 'all';
+
+if ( $selected_day === 'all' ) {
+	$day_checked_in_ids = $checked_in_ids;
+} else {
+	$day_checked_in_ids = array_keys( array_filter( $checkin_times, fn( $t ) => str_starts_with( $t, $selected_day ) ) );
+}
+$day_checked_in_count = count( $day_checked_in_ids );
+
 // ── QR emails sent ────────────────────────────────────────────────────────────
 $qr_sent_ids = get_posts( [
 	'post_type' => 'ctci_attendee', 'posts_per_page' => -1, 'post_status' => 'publish', 'fields' => 'ids',
@@ -37,18 +62,23 @@ foreach ( $all_ids as $pid ) {
 arsort( $ticket_counts );
 
 // ── Recent check-ins (last 10) ────────────────────────────────────────────────
-$recent = get_posts( [
+$recent_query_args = [
 	'post_type' => 'ctci_attendee', 'posts_per_page' => 10, 'post_status' => 'publish',
 	'meta_key'  => $meta_key, 'orderby' => 'meta_value', 'order' => 'DESC',
-	'meta_query' => [ [ 'key' => $meta_key, 'compare' => 'EXISTS' ] ],
-] );
+];
+if ( $selected_day === 'all' ) {
+	$recent_query_args['meta_query'] = [ [ 'key' => $meta_key, 'compare' => 'EXISTS' ] ];
+} else {
+	$recent_query_args['meta_query'] = [ [ 'key' => $meta_key, 'value' => $selected_day, 'compare' => 'LIKE' ] ];
+}
+$recent = get_posts( $recent_query_args );
 
 // ── Check-in timeline (by hour today) ────────────────────────────────────────
-$today = current_time( 'Y-m-d' );
+$timeline_day = $selected_day !== 'all' ? $selected_day : current_time( 'Y-m-d' );
 $hourly = array_fill( 7, 14, 0 ); // hours 07–20
 foreach ( $checked_in_ids as $pid ) {
 	$t = get_post_meta( $pid, $meta_key, true );
-	if ( $t && str_starts_with( $t, $today ) ) {
+	if ( $t && str_starts_with( $t, $timeline_day ) ) {
 		$h = (int) date( 'G', strtotime( $t ) );
 		if ( isset( $hourly[ $h ] ) ) $hourly[ $h ]++;
 	}
@@ -63,6 +93,34 @@ foreach ( $checked_in_ids as $pid ) {
 	</span>
 </h1>
 
+<div class="ctci-card ctci-dash-filter">
+	<form method="get" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+		<input type="hidden" name="page" value="camptix-checkin" />
+		<label for="ctci_date" style="font-weight:600;font-size:13px;">
+			&#x1F4C5; <?php esc_html_e( 'Report for:', 'camptix-checkin' ); ?>
+		</label>
+		<select id="ctci_date" name="ctci_date" onchange="this.form.submit()">
+			<option value="all" <?php selected( $selected_day, 'all' ); ?>><?php esc_html_e( 'All days', 'camptix-checkin' ); ?></option>
+			<?php foreach ( $available_days as $day ) : ?>
+				<option value="<?php echo esc_attr( $day ); ?>" <?php selected( $selected_day, $day ); ?>>
+					<?php echo esc_html( date_i18n( 'D, M j, Y', strtotime( $day ) ) ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<button type="submit" class="button"><?php esc_html_e( 'Apply', 'camptix-checkin' ); ?></button>
+		<?php if ( $selected_day !== 'all' ) : ?>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=camptix-checkin' ) ); ?>" class="button">
+				&#x2715; <?php esc_html_e( 'Clear filter', 'camptix-checkin' ); ?>
+			</a>
+			<span style="font-size:12px;color:#888;">
+				<?php printf( esc_html__( 'Showing check-ins for %s', 'camptix-checkin' ), '<strong>' . esc_html( date_i18n( 'F j, Y', strtotime( $selected_day ) ) ) . '</strong>' ); ?>
+			</span>
+		<?php elseif ( empty( $available_days ) ) : ?>
+			<span style="font-size:12px;color:#aaa;"><?php esc_html_e( 'No check-ins recorded yet.', 'camptix-checkin' ); ?></span>
+		<?php endif; ?>
+	</form>
+</div>
+
 <!-- ── Stat cards ────────────────────────────────────────────────────────── -->
 <div class="ctci-dash-stats">
 
@@ -72,8 +130,12 @@ foreach ( $checked_in_ids as $pid ) {
 	</div>
 
 	<div class="ctci-dash-stat ctci-dash-stat-green">
-		<div class="ctci-dash-stat-num"><?php echo $checked_in; ?></div>
-		<div class="ctci-dash-stat-label"><?php esc_html_e( 'Checked In', 'camptix-checkin' ); ?></div>
+		<div class="ctci-dash-stat-num"><?php echo $day_checked_in_count; ?></div>
+		<div class="ctci-dash-stat-label">
+			<?php echo $selected_day === 'all'
+				? esc_html__( 'Checked In', 'camptix-checkin' )
+				: esc_html__( 'Checked In (Day)', 'camptix-checkin' ); ?>
+		</div>
 	</div>
 
 	<div class="ctci-dash-stat ctci-dash-stat-orange">
@@ -103,7 +165,10 @@ foreach ( $checked_in_ids as $pid ) {
 		<div style="background:#0073aa;width:<?php echo $pct; ?>%;height:100%;border-radius:99px;transition:width .4s;"></div>
 	</div>
 	<p style="margin:8px 0 0;font-size:12px;color:#888;">
-		<?php printf( esc_html__( '%1$d of %2$d attendees checked in', 'camptix-checkin' ), $checked_in, $total ); ?>
+		<?php printf( esc_html__( '%1$d of %2$d attendees checked in overall', 'camptix-checkin' ), $checked_in, $total ); ?>
+		<?php if ( $selected_day !== 'all' ) : ?>
+			&mdash; <?php printf( esc_html__( '%1$d checked in on %2$s', 'camptix-checkin' ), $day_checked_in_count, esc_html( date_i18n( 'M j', strtotime( $selected_day ) ) ) ); ?>
+		<?php endif; ?>
 	</p>
 </div>
 
@@ -165,7 +230,7 @@ foreach ( $checked_in_ids as $pid ) {
 						<?php endif; ?>
 					</td>
 					<td style="font-size:12px;color:#666;">
-						<?php echo esc_html( date( 'H:i', strtotime( $ts ) ) ); ?>
+						<?php echo esc_html( $selected_day === 'all' ? date( 'M j, H:i', strtotime( $ts ) ) : date( 'H:i', strtotime( $ts ) ) ); ?>
 					</td>
 				</tr>
 			<?php endforeach; ?>
@@ -180,7 +245,11 @@ foreach ( $checked_in_ids as $pid ) {
 
 <!-- ── Today's hourly timeline ───────────────────────────────────────────── -->
 <div class="ctci-card" style="margin-top:20px;">
-	<h2><?php esc_html_e( "Today's Check-In Timeline", 'camptix-checkin' ); ?></h2>
+	<h2>
+		<?php echo $selected_day === 'all'
+			? esc_html__( "Today's Check-In Timeline", 'camptix-checkin' )
+			: sprintf( esc_html__( 'Check-In Timeline — %s', 'camptix-checkin' ), esc_html( date_i18n( 'M j, Y', strtotime( $selected_day ) ) ) ); ?>
+	</h2>
 	<div class="ctci-timeline">
 	<?php
 	$max_h = max( array_values( $hourly ) ) ?: 1;
@@ -196,7 +265,9 @@ foreach ( $checked_in_ids as $pid ) {
 	<?php endforeach; ?>
 	</div>
 	<p style="margin:6px 0 0;font-size:11px;color:#aaa;">
-		<?php esc_html_e( 'Shows check-ins by hour for today only.', 'camptix-checkin' ); ?>
+		<?php echo $selected_day === 'all'
+			? esc_html__( 'Shows check-ins by hour for today only. Use the date filter above to see another day.', 'camptix-checkin' )
+			: esc_html__( 'Shows check-ins by hour for the selected day.', 'camptix-checkin' ); ?>
 	</p>
 </div>
 
