@@ -58,12 +58,6 @@ Built for **WordCamp Philippines 2026**.
 - Ticket type shown only for non-Regular tickets (Regular is the default and omitted)
 - Print button triggers browser print dialog; no QR code on the badge (QR is for check-in only)
 
-### Printer URL
-
-When set, "Print Badge" opens the badge page and sends the badge data to the configured URL as query parameters (`name`, `company`, `wordpress_username`, `social`, `website`, `meal_preference`, `ticket_type`).
-
-- **Printer Offline**: If the printer URL is unreachable, the browser print dialog opens automatically so a printer connected to the device can be used. Leave empty to keep the default on-screen badge print.
-
 ### Data Sync
 <img width="1904" height="913" alt="image" src="https://github.com/user-attachments/assets/1730182e-04d2-4da6-85c4-59f81d61301d" />
 <img width="1917" height="914" alt="image" src="https://github.com/user-attachments/assets/2fadaf8b-0a7a-43c1-91bb-7f4f95c40e7c" />
@@ -76,10 +70,17 @@ When set, "Print Badge" opens the badge page and sends the badge data to the con
 - Configurable auto-sync schedule
 
 ### Settings & Reset
-<img width="1900" height="913" alt="image" src="https://github.com/user-attachments/assets/ea5c6721-1c15-4e66-8b49-774ac70848fb" />
+<img width="2032" height="1110" alt="image" src="https://github.com/user-attachments/assets/a78e55f6-cc76-45e3-9c18-84f45636d7ea" />
+
 
 - Configurable check-in meta key, email subject, badge field visibility
 - **Danger Zone** — Reset All button permanently deletes all attendee data, check-in records, QR cache, and sent-email flags
+
+### Printer URL
+
+When set, "Print Badge" opens the badge page and sends the badge data to the configured URL as query parameters (`name`, `company`, `wordpress_username`, `social`, `website`, `meal_preference`, `ticket_type`).
+
+- **Printer Offline**: If the printer URL is unreachable, the browser print dialog opens automatically so a printer connected to the device can be used. Leave empty to keep the default on-screen badge print.
 
 ---
 
