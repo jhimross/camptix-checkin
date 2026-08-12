@@ -719,3 +719,21 @@
 		font-size: 14px;
 	}
 }
+
+/* ── Printer Status Badge ───────────────────────────────────── */
+.ctci-printer-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	margin-left: 10px;
+	vertical-align: middle;
+}
+.ctci-printer-status-checking { background: #f0f6fc; color: #1d4ed8; }
+.ctci-printer-status-online   { background: #d1fadf; color: #065f46; }
+.ctci-printer-status-offline  { background: #fee2e2; color: #991b1b; }
+.ctci-printer-status-empty    { background: #f3f4f6; color: #4b5563; }
+

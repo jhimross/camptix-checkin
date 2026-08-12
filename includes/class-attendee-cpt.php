@@ -166,7 +166,16 @@ class CTCI_Attendee_CPT {
 			'checked_in_at'        => $meta[ $meta_key ][0]              ?? null,
 			'qr_sent'              => $meta['ctci_qr_sent'][0]           ?? null,
 			'qr_url'               => CTCI_QR_Generator::get_qr_url( $post_id, 250 ),
-			'badge_url'            => admin_url( "admin.php?page=camptix-checkin-badge&attendee_id={$post_id}" ),
+			'badge_url'            => CTCI_Badge_Print::get_print_page_url( [
+				'badge_name'      => $badge_name,
+				'name'            => $display,
+				'company'         => $meta['ctci_company'][0]            ?? '',
+				'wordpress_username' => $meta['ctci_wordpress_username'][0] ?? '',
+				'social'          => $social,
+				'website'         => $meta['ctci_website'][0]            ?? '',
+				'meal_preference' => $meta['ctci_meal_preference'][0]    ?? '',
+				'ticket'          => $meta['ctci_ticket_type'][0]        ?? '',
+			] ),
 		];
 	}
 

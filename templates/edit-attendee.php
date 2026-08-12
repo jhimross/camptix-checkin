@@ -27,6 +27,7 @@ $saved    = isset( $_GET['saved'] );
 		<a href="<?php echo esc_url( $back_url ); ?>" class="page-title-action">
 			&larr; <?php esc_html_e( 'Back to Attendees', 'camptix-checkin' ); ?>
 		</a>
+		<span class="ctci-printer-status" style="display:none;"></span>
 	</h1>
 
 	<?php if ( $saved ) : ?>
@@ -188,10 +189,11 @@ $saved    = isset( $_GET['saved'] );
 				<div class="ctci-card" style="margin-top:16px;">
 					<h2><?php esc_html_e( 'Quick Actions', 'camptix-checkin' ); ?></h2>
 					<div style="display:flex;flex-direction:column;gap:10px;">
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=camptix-checkin-badge&attendee_id=' . $attendee_id ) ); ?>"
-							class="button button-large" target="_blank" style="text-align:center;">
+						<button type="button" class="button button-large ctci-print-badge"
+							data-attendee="<?php echo esc_attr( wp_json_encode( $d ) ); ?>"
+							style="text-align:center;">
 							&#x1F5A8; <?php esc_html_e( 'Print Badge', 'camptix-checkin' ); ?>
-						</a>
+						</button>
 						<button type="button" class="button button-large" id="ctci-preview-qr" style="text-align:center;">
 							&#x1F4F7; <?php esc_html_e( 'Preview QR Code', 'camptix-checkin' ); ?>
 						</button>
@@ -250,5 +252,15 @@ document.getElementById('ctci-preview-qr').addEventListener('click', function() 
 	var box = document.getElementById('ctci-qr-preview');
 	box.style.display = box.style.display === 'none' ? 'block' : 'none';
 	this.textContent = box.style.display === 'none' ? '\uD83D\uDCF7 Preview QR Code' : '\uD83D\uDCF7 Hide QR Code';
+});
+
+// Print Badge — falls back to the browser print dialog when the configured
+// printer URL is unreachable.
+document.addEventListener('click', function(e) {
+	var btn = e.target.closest('.ctci-print-badge');
+	if (!btn) return;
+	var attendee = {};
+	try { attendee = JSON.parse(btn.dataset.attendee || '{}'); } catch (err) { attendee = {}; }
+	if (window.ctciPrintBadge) window.ctciPrintBadge(attendee);
 });
 </script>

@@ -96,4 +96,89 @@ class CTCI_Badge_Print {
 			'qr_embed'           => CTCI_QR_Generator::get_qr_img_tag( $attendee_id, 120, $name ),
 		];
 	}
+
+	/**
+	 * Build the query parameters that carry badge data to the printer or the
+	 * standalone /print badge page.
+	 *
+	 * Accepted $data keys are the ones returned by get_badge_data() /
+	 * CTCI_Attendee_CPT::get_data() — ticket may be keyed as 'ticket' or
+	 * 'ticket_type'.
+	 *
+	 * @param array $data Badge data for a single attendee.
+	 * @return array Query args keyed by param name.
+	 */
+	public static function get_badge_query_args( array $data ): array {
+		$ticket_type = trim( $data['ticket'] ?? $data['ticket_type'] ?? '' );
+
+		// "Regular" ticket displays as the generic "Attendee" label.
+		if ( $ticket_type && strtolower( $ticket_type ) === 'regular' ) {
+			$ticket_type = __( 'Attendee', 'camptix-checkin' );
+		}
+
+		$params = [
+			'name'              => trim( $data['badge_name'] ?? ( $data['name'] ?? '' ) ),
+			'company'           => trim( $data['company'] ?? '' ),
+			'wordpress_username'=> trim( $data['wordpress_username'] ?? '' ),
+			'social'            => trim( $data['social'] ?? '' ),
+			'meal_preference'   => trim( $data['meal_preference'] ?? '' ),
+			'ticket_type'       => $ticket_type,
+		];
+
+		// Website is only sent when present (per requirements).
+		if ( ! empty( $data['website'] ) ) {
+			$params['website'] = trim( $data['website'] );
+		}
+
+		// Omit empty optional fields so only real data is passed.
+		foreach ( $params as $key => $value ) {
+			if ( '' === $value ) {
+				unset( $params[ $key ] );
+			}
+		}
+
+		return $params;
+	}
+
+	/**
+	 * URL of the standalone badge page (/print) carrying the badge data as
+	 * query parameters.
+	 *
+	 * @param array $data Badge data for a single attendee.
+	 * @return string
+	 */
+	public static function get_print_page_url( array $data ): string {
+		return home_url( '/print' ) . '?' . http_build_query( self::get_badge_query_args( $data ) );
+	}
+
+	/**
+	 * Build the printer URL with attendee data as query parameters.
+	 *
+	 * When a printer HTTP URL is configured, "Print Badge" sends the badge
+	 * fields straight to the printer instead of opening the standalone badge
+	 * page. Returns an empty string when no printer is configured, so callers
+	 * can fall back to the default badge page.
+	 *
+	 * @param array $data Badge data for a single attendee.
+	 * @return string Printer URL with query args, or '' when unconfigured.
+	 */
+	public static function get_printer_url( array $data ): string {
+		$printer = trim( (string) get_option( 'ctci_printer_url', '' ) );
+		if ( ! $printer ) {
+			return '';
+		}
+
+		$parts = explode( '?', $printer, 2 );
+		$path  = rtrim( $parts[0], '/' );
+		if ( ! str_ends_with( $path, '/print' ) ) {
+			$path .= '/print';
+		}
+		$printer = $path . ( isset( $parts[1] ) ? '?' . $parts[1] : '' );
+
+		$separator = '?';
+		if ( str_contains( $printer, '?' ) ) {
+			$separator = ( str_ends_with( $printer, '?' ) || str_ends_with( $printer, '&' ) ) ? '' : '&';
+		}
+		return $printer . $separator . http_build_query( self::get_badge_query_args( $data ) );
+	}
 }

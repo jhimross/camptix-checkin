@@ -3,6 +3,7 @@
 	<h1 class="ctci-page-title">
 		<span class="dashicons dashicons-camera"></span>
 		<?php esc_html_e( 'QR Code Scanner', 'camptix-checkin' ); ?>
+		<span class="ctci-printer-status" style="display:none;"></span>
 	</h1>
 
 	<div class="ctci-scanner-layout">

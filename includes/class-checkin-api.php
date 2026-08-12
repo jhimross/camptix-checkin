@@ -223,7 +223,14 @@ class CTCI_Checkin_API {
 			'checked_in'    => ! empty( $meta[ $meta_key ][0] ),
 			'checked_in_at' => $meta[ $meta_key ][0] ?? null,
 			'qr_url'        => CTCI_QR_Generator::get_qr_url( $attendee_id, 250 ),
-			'badge_url'     => admin_url( "admin.php?page=camptix-checkin-badge&attendee_id={$attendee_id}" ),
+			'badge_url'     => CTCI_Badge_Print::get_print_page_url( [
+				'name'            => $name,
+				'company'         => $questions[ $q_co  ] ?? ( $meta[ $q_co  ][0] ?? '' ),
+				'social'          => $questions[ $q_key ] ?? ( $meta[ $q_key ][0] ?? '' ),
+				'website'         => $questions[ $q_web ] ?? ( $meta[ $q_web ][0] ?? '' ),
+				'meal_preference' => $questions['meal_preference'] ?? ( $meta['ctci_meal_preference'][0] ?? '' ),
+				'ticket'          => $meta['tix_ticket_id'][0] ?? '',
+			] ),
 		];
 	}
 }

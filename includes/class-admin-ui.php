@@ -137,11 +137,21 @@ class CTCI_Admin_UI {
 			true
 		);
 
+		wp_enqueue_script(
+			'ctci-print',
+			CTCI_PLUGIN_URL . 'assets/js/print.js',
+			[],
+			CTCI_VERSION,
+			true
+		);
+
 		wp_localize_script( 'ctci-scanner', 'ctciConfig', [
 			'apiBase'      => rest_url( 'camptix-checkin/v1' ),
 			'nonce'        => wp_create_nonce( 'wp_rest' ),
 			'adminUrl'     => admin_url( 'admin.php' ),
 			'adminPostUrl' => admin_url( 'admin-post.php' ),
+			'printerUrl'   => get_option( 'ctci_printer_url', '' ),
+			'printUrl'     => home_url( '/print' ),
 			'strings'   => [
 				'scanning'          => __( 'Scanning…', 'camptix-checkin' ),
 				'scan_success'      => __( 'Checked in!', 'camptix-checkin' ),
@@ -384,6 +394,7 @@ class CTCI_Admin_UI {
 			update_option( 'ctci_social_meta_field',      sanitize_text_field( $_POST['ctci_social_meta_field'] ?? 'ctci_social' ) );
 			update_option( 'ctci_website_meta_field',     sanitize_text_field( $_POST['ctci_website_meta_field'] ?? 'ctci_website' ) );
 			update_option( 'ctci_company_meta_field',     sanitize_text_field( $_POST['ctci_company_meta_field'] ?? 'ctci_company' ) );
+			update_option( 'ctci_printer_url',           esc_url_raw( $_POST['ctci_printer_url'] ?? '' ) );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'camptix-checkin' ) . '</p></div>';
 		}
 

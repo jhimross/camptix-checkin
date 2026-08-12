@@ -44,6 +44,21 @@
 			</tr>
 		</table>
 
+		<h2><?php esc_html_e( 'Badge Printer', 'camptix-checkin' ); ?></h2>
+		<table class="form-table">
+			<tr>
+				<th><label for="ctci_printer_url"><?php esc_html_e( 'Printer URL', 'camptix-checkin' ); ?></label></th>
+				<td>
+					<div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
+						<input id="ctci_printer_url" name="ctci_printer_url" type="url" class="large-text" style="margin:0;flex:1;"
+							value="<?php echo esc_attr( get_option( 'ctci_printer_url', '' ) ); ?>" />
+						<span id="ctci-settings-printer-status" class="ctci-printer-status" style="display:none;margin-left:0;white-space:nowrap;"></span>
+					</div>
+					<p class="description"><?php esc_html_e( 'When set, "Print Badge" opens the badge page and sends the badge data to this URL as query parameters (name, company, wordpress_username, social, website, meal_preference, ticket_type). If the printer URL is unreachable, the browser print dialog opens automatically so a printer connected to the device can be used. Leave empty to keep the default on-screen badge print.', 'camptix-checkin' ); ?></p>
+				</td>
+			</tr>
+		</table>
+
 		<h2><?php esc_html_e( 'Email Settings', 'camptix-checkin' ); ?></h2>
 		<table class="form-table">
 			<tr>

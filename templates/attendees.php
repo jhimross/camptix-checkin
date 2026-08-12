@@ -12,9 +12,9 @@
 		</div>
 		<p class="ctci-modal-hint"><?php esc_html_e( 'Attendee presents this QR at the check-in desk.', 'camptix-checkin' ); ?></p>
 		<div class="ctci-modal-actions">
-			<a id="ctci-modal-badge-link" href="#" target="_blank" class="button button-primary">
+			<button type="button" id="ctci-modal-badge-link" class="button button-primary ctci-print-badge">
 				<?php esc_html_e( 'Print Badge', 'camptix-checkin' ); ?>
-			</a>
+			</button>
 			<a id="ctci-modal-qr-download" href="#" target="_blank" class="button">
 				<?php esc_html_e( 'Open QR Image', 'camptix-checkin' ); ?>
 			</a>
@@ -29,6 +29,7 @@
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=camptix-checkin-add' ) ); ?>" class="page-title-action" style="background:#0073aa;color:#fff;border-color:#0073aa;">
 			&#x2795; <?php esc_html_e( 'Add Attendee', 'camptix-checkin' ); ?>
 		</a>
+		<span class="ctci-printer-status" style="display:none;"></span>
 	</h1>
 
 	<?php if ( isset( $_GET['deleted'] ) ) : ?>
@@ -148,17 +149,17 @@ document.addEventListener('DOMContentLoaded', function () {
 				<td class="col-status">${a.checked_in
 					? '<span class="ctci-badge ctci-badge-in">&#10003; Checked In</span><br><small>' + escHtml(a.checked_in_at || '') + '</small>'
 					: '<span class="ctci-badge ctci-badge-out">&#10005; Not Yet</span>'}</td>
-				<td class="col-actions ctci-action-btns">
-					<a href="${escHtml(adminUrl + '?page=camptix-checkin-edit&attendee_id=' + a.id)}" class="button button-small">&#x270E; Edit</a>
-					<a href="${escHtml(adminUrl + '?page=camptix-checkin-badge&attendee_id=' + a.id)}" class="button button-small" target="_blank">&#x1F5A8; Badge</a>
-					<button class="button button-small ctci-show-qr"
-						data-qr="${escHtml(a.qr_url)}"
-						data-name="${escHtml(a.badge_name || a.name)}"
-						data-meta="${escHtml(modalMeta)}"
-						data-badge="${escHtml(adminUrl + '?page=camptix-checkin-badge&attendee_id=' + a.id)}"
-					>&#x1F4F7; QR</button>
-					<button class="button button-small ctci-delete-attendee" style="color:#b32d2e;" data-id="${a.id}" data-name="${escHtml(a.badge_name || a.name)}">&#x1F5D1; Del</button>
-				</td>
+			<td class="col-actions ctci-action-btns">
+				<a href="${escHtml(adminUrl + '?page=camptix-checkin-edit&attendee_id=' + a.id)}" class="button button-small">&#x270E; Edit</a>
+				<button type="button" class="button button-small ctci-print-badge" data-attendee="${encodeURIComponent(JSON.stringify(a || {}))}">&#x1F5A8; Badge</button>
+				<button class="button button-small ctci-show-qr"
+					data-qr="${escHtml(a.qr_url)}"
+					data-name="${escHtml(a.badge_name || a.name)}"
+					data-meta="${escHtml(modalMeta)}"
+					data-attendee="${encodeURIComponent(JSON.stringify(a || {}))}"
+				>&#x1F4F7; QR</button>
+				<button class="button button-small ctci-delete-attendee" style="color:#b32d2e;" data-id="${a.id}" data-name="${escHtml(a.badge_name || a.name)}">&#x1F5D1; Del</button>
+			</td>
 			</tr>`;
 		}).join('');
 	}
@@ -214,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		modalImg.src          = btn.dataset.qr    || '';
 		modalName.textContent = btn.dataset.name  || '';
 		modalMeta.textContent = btn.dataset.meta  || '';
-		modalBadge.href       = btn.dataset.badge || '#';
+		modalBadge.dataset.attendee = btn.dataset.attendee || '{}';
 		modalQrOpen.href      = btn.dataset.qr    || '#';
 		modal.style.display   = 'flex';
 		document.body.style.overflow = 'hidden';
@@ -230,6 +231,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		const btn = e.target.closest('.ctci-show-qr');
 		if (btn) { openModal(btn); return; }
 		if (e.target === backdrop || e.target.closest('.ctci-modal-close')) closeModal();
+	});
+
+	// Print Badge buttons (row actions + QR modal) — falls back to the
+	// browser print dialog when the configured printer URL is unreachable.
+	document.addEventListener('click', function(e) {
+		const btn = e.target.closest('.ctci-print-badge');
+		if (!btn) return;
+		let attendee = {};
+		try { attendee = JSON.parse(decodeURIComponent(btn.dataset.attendee || '{}')); } catch (err) { attendee = {}; }
+		if (window.ctciPrintBadge) window.ctciPrintBadge(attendee);
 	});
 
 	document.addEventListener('keydown', function(e) {

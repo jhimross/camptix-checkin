@@ -10,7 +10,6 @@
 	const cfg      = window.ctciConfig || {};
 	const apiBase  = cfg.apiBase  || '';
 	const nonce    = cfg.nonce    || '';
-	const adminUrl = cfg.adminUrl || '';
 	const str      = cfg.strings  || {};
 
 	// DOM refs (only present on the scanner page)
@@ -155,8 +154,6 @@
 			? '<span class="ctci-badge ctci-badge-in">✓ Checked In</span>'
 			: '<span class="ctci-badge ctci-badge-warn">⚠ Already Checked In</span>';
 
-		const badgeLink = adminUrl + '?page=camptix-checkin-badge&attendee_id=' + data.id;
-
 		let meta = '';
 		if ( data.company ) meta += '<li>🏢 ' + escHtml( data.company ) + '</li>';
 		if ( data.social )  meta += '<li>@ ' + escHtml( data.social )  + '</li>';
@@ -167,9 +164,9 @@
 			<div class="ctci-result-status">${ label }</div>
 			${ meta ? '<ul class="ctci-result-meta">' + meta + '</ul>' : '' }
 			<p class="ctci-result-time">${ escHtml( data.checked_in_at || '' ) }</p>
-			<a href="${ escHtml( badgeLink ) }" class="button button-small ctci-badge-link" target="_blank">
+			<button type="button" class="button button-small ctci-badge-link ctci-print-badge" data-attendee="${encodeURIComponent( JSON.stringify( data || {} ) )}">
 				🖨 Print Badge
-			</a>`;
+			</button>`;
 	}
 
 	/* ----------------------------------------------------------
@@ -179,7 +176,6 @@
 		const empty = logBody.querySelector( '.ctci-log-empty' );
 		if ( empty ) empty.remove();
 
-		const badgeLink = adminUrl + '?page=camptix-checkin-badge&attendee_id=' + ( data.id || '' );
 		const statusBadge = statusKey === 'checked_in'
 			? '<span class="ctci-badge ctci-badge-in">✓ In</span>'
 			: statusKey === 'already_checked_in'
@@ -191,7 +187,7 @@
 			<td><strong>${ escHtml( data.name || '—' ) }</strong></td>
 			<td>${ statusBadge }</td>
 			<td><small>${ escHtml( data.checked_in_at || now() ) }</small></td>
-			<td>${ data.id ? '<a href="' + escHtml( badgeLink ) + '" target="_blank" class="button button-small">🖨</a>' : '—' }</td>`;
+			<td>${ data.id ? '<button type="button" class="button button-small ctci-print-badge" data-attendee="' + encodeURIComponent( JSON.stringify( data || {} ) ) + '">🖨</button>' : '—' }</td>`;
 
 		logBody.insertBefore( row, logBody.firstChild );
 
@@ -240,6 +236,19 @@
 	 * -------------------------------------------------------- */
 	if ( btnStart ) btnStart.addEventListener( 'click', startCamera );
 	if ( btnStop  ) btnStop.addEventListener(  'click', stopCamera  );
+
+	// Delegated handler for "Print Badge" buttons (result card + log rows).
+	document.addEventListener( 'click', e => {
+		const btn = e.target.closest( '.ctci-print-badge' );
+		if ( ! btn ) return;
+		let attendee = {};
+		try {
+			attendee = JSON.parse( decodeURIComponent( btn.dataset.attendee || '{}' ) );
+		} catch ( err ) {
+			attendee = {};
+		}
+		if ( window.ctciPrintBadge ) window.ctciPrintBadge( attendee );
+	} );
 
 	/* ----------------------------------------------------------
 	 * Helpers
